@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المَكْتَبَة المَفْقودَة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --mystery: #8E44AD;
+            --happy: #2ED573;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .start-screen {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .mystery-emoji {
+            font-size: 60px;
+            margin: 20px 0;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .start-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .story-screen {
+            display: none;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .chapter-number {
+            font-size: 14px;
+            color: var(--mystery);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .story-emoji {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #f5f5f5;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--mystery) 0%, var(--primary) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .story-text {
+            font-size: 18px;
+            color: #333;
+            line-height: 2;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(142, 68, 173, 0.08);
+            border-right: 4px solid var(--mystery);
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+
+        .problem-box {
+            background: rgba(231, 76, 60, 0.1);
+            border-right: 4px solid #e74c3c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #c0392b;
+        }
+
+        .choices-title {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-align: right;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .ending-screen {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .ending-screen h2 {
+            font-size: 32px;
+            color: var(--happy);
+            margin-bottom: 20px;
+        }
+
+        .ending-emoji {
+            font-size: 100px;
+            margin: 20px 0;
+        }
+
+        .ending-text {
+            font-size: 18px;
+            color: #555;
+            line-height: 2;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(46, 213, 115, 0.1);
+            border-radius: 10px;
+            white-space: pre-wrap;
+        }
+
+        .restart-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 المَكْتَبَة المَفْقودَة 🔍</h1>
+        <p>قِصَّة غامِضَة مِن الفَصْل الخامِس والسّادِس</p>
+        <p style="font-size: 14px; margin-top: 15px; opacity: 0.9;">✏️ شَدا عابِد - عِلاج وَظِيفِي</p>
+    </div>
+
+    <div id="startScreen" class="start-screen">
+        <h2>مَرْحَباً بِكُم! 👋</h2>
+        <p>شَيْء غَرِيب حَدَث فِي بَلَدِكُم...</p>
+        <p>المَكْتَبَة القَدِيمَة - المَكان الَّذِي أحْبَبْتُمُوهُ - مُغْلَقَة فُجْأَة!</p>
+        <div class="mystery-emoji">📚🔒❓</div>
+        <p><strong>أنْتُم تُرِيدون أنْ تَعْرِفُوا... لِماذا؟</strong></p>
+        <button class="start-btn" onclick="startStory()">ابْدَأوا التَحْقِيق! 🔎</button>
+    </div>
+
+    <div id="storyScreen" class="story-screen">
+        <div class="story-card">
+            <div class="chapter-number" id="chapterLabel"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="story-emoji" id="storyEmoji"></div>
+            <div class="story-text" id="storyText"></div>
+            <div class="problem-box" id="problemBox" style="display:none;"></div>
+            <div>
+                <div class="choices-title">👇 مَاذَا تَفْعَلون؟</div>
+                <div class="choices-grid" id="choicesGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="endingScreen" class="ending-screen">
+        <h2>✅ انْتَصَرْتُم! ✅</h2>
+        <div class="ending-emoji">🏆</div>
+        <div class="ending-text" id="endingText"></div>
+        <button class="restart-btn" onclick="location.reload()">قِصَّة جَدِيدَة! 🔄</button>
+    </div>
+</div>
+
+<script>
+const chapters = [
+    {
+        num: 1,
+        emoji: '📚🔒',
+        title: 'الفَصْل الأوّل - الاكْتِشاف',
+        text: 'أنْتُم فِي طَرِيقِكُم إِلى المَدْرَسَة عِندَما تُلاحِظون شَيْئاً غَرِيباً...\n\nالمَكْتَبَة القَدِيمَة - المَكان الَّذِي أحْبَبْتُموهُ - مُغْلَقَة!\nسِلْسِلَة حَدِيدِيَّة عَلى الباب. علامَة "مُغْلَق".\n\nأنْتُم تُرِيدون الحَقِيقَة...',
+        problem: 'المُشْكِلَة: لِماذا أُغْلِقَت المَكْتَبَة؟',
+        choices: [
+            { text: '🔍 نَبْحَث عَن أمِينَة المَكْتَبَة', next: 'interview' },
+            { text: '📰 نَتَحَقَّق مِن السِّجِلّات', next: 'records' },
+            { text: '👤 نَسْأَل رَئِيس البَلَدِيَّة', next: 'mayor' }
+        ]
+    },
+    {
+        num: 2,
+        emoji: '🔎📋',
+        title: 'الفَصْل الثّاني - المَعْلومات',
+        text: 'بَعْدَ تَحْقِيقكُم، تَكْتَشِفون الحَقِيقَة الصَّدْمَة!\n\nالأموال المَخَصَّصَة للمَكْتَبَة قَدْ اخْتَفَت!\n\nرَئِيس البَلَدِيَّة لَدَيْها حِسابات بَنْكِيَّة جَدِيدَة...\nأموال بِنَفْس الحَجْم الَّذِي اخْتَفَى مِن المَكْتَبَة!',
+        problem: 'المُشْكِلَة الجَدِيدَة: هذا قَدْ يَكون سَرِقَة!',
+        choices: [
+            { text: '📋 نَطْلُب تَدْقِيق رسْمِي', next: 'audit' },
+            { text: '👮 نَتَصِل بِالشُّرطَة', next: 'police' },
+            { text: '🗣️ نَكْشِف الأمر أمام الجَمِيع', next: 'public' }
+        ]
+    },
+    {
+        num: 3,
+        emoji: '⚖️✅',
+        title: 'الفَصْل الثّالِث - العَدالَة',
+        text: 'تَبْدَأ التَحْقِيقات الرسْمِيَّة!\n\nالدَّلائِل واضِحَة: سَرِقَة مِن قِبَل رَئِيس البَلَدِيَّة!\n\nالشُّرطَة تَتِحرَّك.\nرَئِيس البَلَدِيَّة تُوقَّف.\nالأموال تُسْتَرْجَع.',
+        problem: 'المُشْكِلَة الأخِيرَة: كَيْف نُعِيد المَكْتَبَة؟',
+        choices: [
+            { text: '📚 فَتْح المَكْتَبَة فوراً!', next: 'open_now' },
+            { text: '🔒 بِناء نِظام أقْوى أولاً', next: 'build_system' },
+            { text: '🎉 حَفْل افْتِتاح عَظِيم!', next: 'ceremony' }
+        ]
+    },
+    {
+        num: 4,
+        emoji: '📚✨',
+        title: 'الفَصْل الرّابِع - الانْتِصار',
+        text: 'السِّلاسِل تُزالُ مِن باب المَكْتَبَة!\n\nالباب يُفْتَح رسْمِياً.\n\nالجَمِيع يَدْخُلون - الأطْفال، الكِبار، المُعَلِّمون.\n\nالمَكْتَبَة تَعُود لِلحَياة!',
+        isEnding: true,
+        ending: 'لَقَد نَجَحْتُم!\n\nالمَكْتَبَة آمِنَة الآن.\nالعَدالَة انْتَصَرَت.\n\nأنْتُم لَسْتُم مُجَرَّد طُلّاب - أنْتُم مَواطِنون حَقِيقِيّون!\n\n🏆 تَهانِينا! 🏆'
+    }
+];
+
+let currentChapter = 0;
+
+function startStory() {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('storyScreen').style.display = 'block';
+    showChapter(0);
+}
+
+function showChapter(idx) {
+    currentChapter = idx;
+    const chap = chapters[idx];
+    
+    const progress = ((idx + 1) / chapters.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    document.getElementById('chapterLabel').textContent = chap.title;
+    document.getElementById('storyEmoji').textContent = chap.emoji;
+    document.getElementById('storyText').textContent = chap.text;
+    
+    if (chap.problem) {
+        document.getElementById('problemBox').style.display = 'block';
+        document.getElementById('problemBox').textContent = '⚠️ ' + chap.problem;
+    } else {
+        document.getElementById('problemBox').style.display = 'none';
+    }
+    
+    if (chap.choices) {
+        const html = chap.choices.map(c => `
+            <button class="choice-btn" onclick="nextChapter('${c.next}')">
+                ${c.text}
+            </button>
+        `).join('');
+        document.getElementById('choicesGrid').innerHTML = html;
+    }
+    
+    if (chap.isEnding) {
+        setTimeout(() => {
+            document.getElementById('storyScreen').style.display = 'none';
+            document.getElementById('endingScreen').style.display = 'block';
+            document.getElementById('endingText').textContent = chap.ending;
+        }, 2000);
+    }
+}
+
+function nextChapter(path) {
+    if (currentChapter < chapters.length - 1) {
+        showChapter(currentChapter + 1);
+    } else {
+        document.getElementById('storyScreen').style.display = 'none';
+        document.getElementById('endingScreen').style.display = 'block';
+    }
+}
+</script>
+
+</body>
+</html>

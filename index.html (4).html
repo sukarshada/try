@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرات قيس - كتاب تفاعلي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        :root {
+            --primary: #FF6B9D;
+            --secondary: #4ECDC4;
+            --warm: #FFD93D;
+            --calm: #6C5CE7;
+            --happy: #2ED573;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* CHARACTER CREATOR */
+        .character-creator {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .character-creator h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .creator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .preview-box {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .character-preview {
+            font-size: 120px;
+            margin: 20px 0;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .customization-options {
+            text-align: right;
+        }
+
+        .option-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .option-group label {
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(255, 107, 157, 0.1);
+        }
+
+        .option-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .start-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* ADVENTURE SCREEN */
+        .adventure-screen {
+            display: none;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .character-display {
+            text-align: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .character-name {
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .story-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .story-title {
+            font-size: 22px;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .story-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .drawing-challenge {
+            background: rgba(108, 92, 231, 0.1);
+            border: 2px solid var(--calm);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .drawing-challenge h4 {
+            color: var(--calm);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .tool-btn {
+            padding: 10px 16px;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .tool-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            background: #f5f5f5;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .ending-screen {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .ending-screen h2 {
+            font-size: 32px;
+            color: var(--happy);
+            margin-bottom: 20px;
+        }
+
+        .celebration {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+
+        .character-final {
+            font-size: 100px;
+            margin: 20px 0;
+        }
+
+        .ending-text {
+            font-size: 18px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .speak-btn {
+            padding: 12px 20px;
+            background: var(--calm);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 15px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .speak-btn:hover {
+            background: #5a4db1;
+            transform: scale(1.05);
+        }
+
+        .speak-btn.speaking {
+            animation: pulse 0.6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .restart-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div style="display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 10px;">
+            <h1>⚔️ مُغامَرات قَيْس</h1>
+            <button class="speak-btn" onclick="speakText('مغامرات قيس')">🔊</button>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+            <p>كِتاب تَفاعُليّ - اخْتَرْ شَخْصِيَّتَك وارْسُمْ مُغامَرَتَك! 🎮🎨</p>
+            <button class="speak-btn" onclick="speakText('كتاب تفاعلي اختر شخصيتك وارسم مغامرتك')">🔊</button>
+        </div>
+    </div>
+
+    <!-- CHARACTER CREATOR -->
+    <div id="creatorScreen" class="character-creator">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2>إنْشاء شَخْصِيَّتُك! 👤</h2>
+            <button class="speak-btn" onclick="speakText('إنشاء شخصيتك')">🔊</button>
+        </div>
+        
+        <div class="creator-grid">
+            <div class="preview-box">
+                <h3>شَخْصِيَّتُك</h3>
+                <div class="character-preview" id="preview">😊</div>
+                <button class="speak-btn" onclick="announceCharacter()" style="margin-top: 15px;">🔊 اسْمَعْ شَخْصِيَّتَك</button>
+            </div>
+
+            <div class="customization-options">
+                <div class="option-group">
+                    <label>
+                        الوَجْه:
+                        <button class="speak-btn" onclick="speakText('الوجه')" style="padding: 8px 12px;">🔊</button>
+                    </label>
+                    <div class="option-buttons">
+                        <button class="option-btn selected" onclick="updatePreview('😊', 'face'); speakText('وجه مبتسم');">😊</button>
+                        <button class="option-btn" onclick="updatePreview('😎', 'face'); speakText('وجه بنظارة شمسية');">😎</button>
+                        <button class="option-btn" onclick="updatePreview('🤖', 'face'); speakText('وجه روبوت');">🤖</button>
+                        <button class="option-btn" onclick="updatePreview('👹', 'face'); speakText('وجه غريب');">👹</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>
+                        المَلابِس:
+                        <button class="speak-btn" onclick="speakText('الملابس')" style="padding: 8px 12px;">🔊</button>
+                    </label>
+                    <div class="option-buttons">
+                        <button class="option-btn selected" onclick="updatePreview('🧑', 'clothes'); speakText('ملابس عادية');">عادِي</button>
+                        <button class="option-btn" onclick="updatePreview('🧙', 'clothes'); speakText('ملابس ساحر');">ساحِر</button>
+                        <button class="option-btn" onclick="updatePreview('🦸', 'clothes'); speakText('ملابس بطل خارق');">بَطَل</button>
+                        <button class="option-btn" onclick="updatePreview('🧗', 'clothes'); speakText('ملابس متسلق جبال');">مُتَسَلِّق</button>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <label>
+                        السِّلاح:
+                        <button class="speak-btn" onclick="speakText('السلاح')" style="padding: 8px 12px;">🔊</button>
+                    </label>
+                    <div class="option-buttons">
+                        <button class="option-btn selected" onclick="updatePreview('', 'weapon'); speakText('بدون سلاح');">بِدُون</button>
+                        <button class="option-btn" onclick="updatePreview('⚔️', 'weapon'); speakText('سيف');">سَيْف</button>
+                        <button class="option-btn" onclick="updatePreview('🏹', 'weapon'); speakText('قوس');">قَوْس</button>
+                        <button class="option-btn" onclick="updatePreview('🔱', 'weapon'); speakText('رمح');">رُمْح</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="start-btn" onclick="startAdventure()" style="flex: 1;">ابْدَأ المُغامَرَة 🚀</button>
+            <button class="speak-btn" onclick="speakText('ابدأ المغامرة')">🔊</button>
+        </div>
+    </div>
+
+    <!-- ADVENTURE SCREEN -->
+    <div id="adventureScreen" class="adventure-screen">
+        <div class="story-card">
+            <div class="character-display" id="characterDisplay">😊</div>
+            <div style="display: flex; justify-content: center; gap: 10px; align-items: center; margin-bottom: 20px;">
+                <div class="character-name">قَيْس المُغامِر</div>
+                <button class="speak-btn" onclick="speakText('قيس المغامر')" style="padding: 10px 15px;">🔊</button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="story-section" id="storySection"></div>
+
+            <div id="drawingContainer"></div>
+
+            <div class="choices" id="choicesContainer"></div>
+        </div>
+    </div>
+
+    <!-- ENDING SCREEN -->
+    <div id="endingScreen" class="ending-screen">
+        <h2>🎉 تَهانِينا يا قَيْس! 🎉</h2>
+        <button class="speak-btn" onclick="speakText('تهانينا يا قيس')" style="margin-bottom: 15px;">🔊 اسْمَعِ التَهاني</button>
+        <div class="celebration">✨🌟⭐</div>
+        <div class="character-final" id="endingCharacter">😊</div>
+        <div class="ending-text" id="endingText">انتَهَت المُغامَرَة بِنَجاح!</div>
+        <button class="speak-btn" onclick="speakText('انتهت المغامرة بنجاح')" style="margin-bottom: 15px;">🔊 اسْمَعِ الرِسالَة</button>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="restart-btn" onclick="location.reload()">مُغامَرَة جَدِيدَة 🚀</button>
+            <button class="speak-btn" onclick="speakText('مغامرة جديدة')">🔊</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let characterState = {
+    face: '😊',
+    clothes: '🧑',
+    weapon: ''
+};
+
+let canvas, ctx;
+let currentColor = '#000';
+
+const chapters = [
+    {
+        title: 'الفَصْل الأوّل: دُخول الكَهْف',
+        story: 'قَيْس يَدْخُل كَهْفاً غامِضاً مَلِيء بِالكُنوز! ارْسُمْ مَخْلوقاً سِحْرِياً يُريده أنْ يَقابِلَهُ فِي الكَهْف:',
+        drawing: true,
+        choices: [
+            { text: 'التَحَدُّث مَعَهُ بِأدَب', next: 1 },
+            { text: 'مُحارَبَتُهُ', next: 1 }
+        ]
+    },
+    {
+        title: 'الفَصْل الثّانِي: اكْتِشافُ السِّر',
+        story: 'المَخْلوق أخْبَرَك بِسِرّ مُهِمّ! ارْسُمِ الكَنْزَ الَّذِي تَبْحَث عَنْهُ:',
+        drawing: true,
+        choices: [
+            { text: 'أخْذ الكَنْز والهُرُوب', next: 2 },
+            { text: 'مُساعَدَة المَخْلوق أوّلاً', next: 2 }
+        ]
+    },
+    {
+        title: 'الفَصْل الثّالِث: المَعْرَكَة النِهائِيَّة',
+        story: 'عَدُوّ قَوِيّ يَقِف فِي طَرِيقِك! ارْسُمْ أدَاة قِتالِيَّة جَدِيدَة تُساعِدُك:',
+        drawing: true,
+        choices: [
+            { text: 'الانْتِصار بِالذَّكاء', next: 3 },
+            { text: 'الانْتِصار بِالقُوَّة', next: 3 }
+        ]
+    },
+    {
+        title: 'الفَصْل الرّابِع: النِهايَة السَّعِيدَة',
+        story: 'أنْتَ انْتَصَرْتَ! أنْقَذْتَ البِلاد وأصْبَحْتَ بَطَلاً حَقِيقِياً. ارْسُمِ احْتِفالَك بِالنَّصْر:',
+        drawing: true,
+        choices: [
+            { text: 'انْهاء المُغامَرَة', next: -1 }
+        ]
+    }
+];
+
+let currentChapter = 0;
+
+function speakText(text) {
+    const btn = event.target;
+    
+    // If already speaking, stop it
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        btn.classList.remove('speaking');
+        btn.textContent = '🔊 اقرأ لي القصة';
+        return;
+    }
+    
+    // Create speech utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-SA'; // Arabic language
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    // Add visual feedback
+    btn.classList.add('speaking');
+    btn.textContent = '⏸️ تَوَقَّف';
+    
+    utterance.onend = function() {
+        btn.classList.remove('speaking');
+        btn.textContent = '🔊 اقْرَأ لِي القِصَّة';
+    };
+    
+    utterance.onerror = function() {
+        btn.classList.remove('speaking');
+        btn.textContent = '🔊 اقْرَأ لِي القِصَّة';
+    };
+    
+    // Start speaking
+    speechSynthesis.speak(utterance);
+}
+
+function updatePreview(emoji, type) {
+    characterState[type] = emoji;
+    document.getElementById('preview').textContent = characterState.face + characterState.clothes + characterState.weapon;
+    
+    document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+    event.target.classList.add('selected');
+}
+
+function announceCharacter() {
+    const char = characterState.face + characterState.clothes + characterState.weapon;
+    const descriptions = {
+        face: {
+            '😊': 'وجه مبتسم',
+            '😎': 'وجه بنظارة شمسية',
+            '🤖': 'وجه روبوت',
+            '👹': 'وجه غريب'
+        },
+        clothes: {
+            '🧑': 'ملابس عادية',
+            '🧙': 'ملابس ساحر',
+            '🦸': 'ملابس بطل خارق',
+            '🧗': 'ملابس متسلق جبال'
+        },
+        weapon: {
+            '': 'بدون سلاح',
+            '⚔️': 'سيف',
+            '🏹': 'قوس',
+            '🔱': 'رمح'
+        }
+    };
+    
+    const desc = descriptions.face[characterState.face] + ', ' + 
+                 descriptions.clothes[characterState.clothes] + ', ' + 
+                 descriptions.weapon[characterState.weapon];
+    speakText(desc);
+}
+
+function startAdventure() {
+    document.getElementById('creatorScreen').style.display = 'none';
+    document.getElementById('adventureScreen').style.display = 'block';
+    document.getElementById('characterDisplay').textContent = characterState.face + characterState.clothes + characterState.weapon;
+    renderChapter();
+}
+
+function renderChapter() {
+    const chapter = chapters[currentChapter];
+    const progress = ((currentChapter + 1) / chapters.length) * 100;
+    document.getElementById('progressFill').style.width = progress + '%';
+
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="story-title">${chapter.title}</div>
+            <button class="speak-btn" onclick="speakText('${chapter.title}')" style="margin: 0;">🔊</button>
+        </div>
+        <div class="story-text">${chapter.story}</div>
+        <button class="speak-btn" onclick="speakText('${chapter.story}')">🔊 اقْرَأ لِي القِصَّة</button>
+    `;
+
+    if (chapter.drawing) {
+        html += `
+            <div class="drawing-challenge">
+                <h4>🎨 رَسْم تَحَدِّي:</h4>
+                <div class="drawing-tools">
+                    <button class="color-option active" style="background: #000;" onclick="setColor('#000', this)"></button>
+                    <button class="color-option" style="background: #FF6B9D;" onclick="setColor('#FF6B9D', this)"></button>
+                    <button class="color-option" style="background: #4ECDC4;" onclick="setColor('#4ECDC4', this)"></button>
+                    <button class="color-option" style="background: #FFD93D;" onclick="setColor('#FFD93D', this)"></button>
+                    <button class="color-option" style="background: #2ED573;" onclick="setColor('#2ED573', this)"></button>
+                    <button class="tool-btn" onclick="clearDrawing()">🗑️ مَسْح</button>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="drawCanvas" width="600" height="300"></canvas>
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('storySection').innerHTML = html;
+
+    if (chapter.drawing) {
+        setTimeout(() => {
+            canvas = document.getElementById('drawCanvas');
+            ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('touchstart', startDraw);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stopDraw);
+        }, 100);
+    }
+
+    // Render choices with voice buttons
+    let choicesHtml = '';
+    chapter.choices.forEach(choice => {
+        choicesHtml += `
+            <div style="display: flex; gap: 10px; align-items: stretch;">
+                <button class="choice-btn" onclick="nextChapter(${choice.next})" style="flex: 1;">
+                    ${choice.text}
+                </button>
+                <button class="speak-btn" onclick="speakText('${choice.text}')" style="padding: 20px 15px;">🔊</button>
+            </div>
+        `;
+    });
+    document.getElementById('choicesContainer').innerHTML = choicesHtml;
+}
+
+let isDrawing = false;
+
+function startDraw(e) {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+
+function stopDraw() {
+    isDrawing = false;
+}
+
+function setColor(color, btn) {
+    currentColor = color;
+    document.querySelectorAll('.color-option').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function clearDrawing() {
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function nextChapter(nextIdx) {
+    if (nextIdx === -1) {
+        document.getElementById('adventureScreen').style.display = 'none';
+        document.getElementById('endingScreen').style.display = 'block';
+        document.getElementById('endingCharacter').textContent = characterState.face + characterState.clothes + characterState.weapon;
+    } else {
+        currentChapter = nextIdx;
+        renderChapter();
+    }
+}
+</script>
+
+</body>
+</html>

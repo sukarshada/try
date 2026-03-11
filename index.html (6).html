@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مهمة الغد - نسخة ممتعة</title>
+  <style>
+    :root{
+      --bg1:#7c8cff;
+      --bg2:#ff9ed1;
+      --card:#ffffff;
+      --text:#243447;
+      --muted:#6b7280;
+      --primary:#5b5ff5;
+      --primary2:#8b5cf6;
+      --green:#22c55e;
+      --yellow:#f59e0b;
+      --red:#ef4444;
+      --soft:#f7f8ff;
+      --shadow:0 14px 34px rgba(0,0,0,.14);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, "Noto Sans Arabic", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,.22), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(255,255,255,.18), transparent 22%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      min-height:100vh;
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    .sparkles{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .sparkle{
+      position:absolute;
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:rgba(255,255,255,.7);
+      animation: floaty linear infinite;
+      filter: blur(.2px);
+    }
+
+    @keyframes floaty{
+      from{ transform:translateY(120vh) scale(.7); opacity:.2; }
+      20%{ opacity:.8; }
+      to{ transform:translateY(-20vh) scale(1.1); opacity:0; }
+    }
+
+    .app{
+      position:relative;
+      z-index:1;
+      max-width:860px;
+      margin:0 auto;
+      padding:14px;
+    }
+
+    .topbar{
+      background:rgba(255,255,255,.94);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:14px;
+      margin-bottom:14px;
+      position:sticky;
+      top:10px;
+      z-index:15;
+      backdrop-filter: blur(10px);
+    }
+
+    .topline{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:28px;
+      font-weight:900;
+      color:var(--primary);
+    }
+
+    .stage{
+      background:#eef2ff;
+      color:var(--primary);
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+
+    .stat{
+      background:var(--soft);
+      border-radius:20px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .value{
+      font-size:21px;
+      font-weight:900;
+    }
+
+    .meter{
+      width:100%;
+      height:14px;
+      background:#e5e7eb;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:8px;
+    }
+
+    .fill{
+      height:100%;
+      transition:width .35s ease;
+    }
+
+    .energy-fill{ background:linear-gradient(90deg,#22c55e,#facc15,#ef4444); }
+    .ready-fill{ background:linear-gradient(90deg,#60a5fa,#8b5cf6); }
+
+    .screen{ display:none; animation:fade .28s ease; }
+    .screen.active{ display:block; }
+
+    @keyframes fade{
+      from{opacity:0;transform:translateY(8px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+      margin-bottom:14px;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:16px;
+      align-items:center;
+    }
+
+    .avatar-box{
+      display:grid;
+      place-items:center;
+      width:120px;
+      height:120px;
+      margin:auto;
+      border-radius:28px;
+      background:linear-gradient(135deg,#fde68a,#fca5a5);
+      box-shadow: inset 0 0 0 6px rgba(255,255,255,.35);
+      position:relative;
+    }
+
+    .avatar{
+      font-size:64px;
+      animation:bob 2.2s ease-in-out infinite;
+      transform-origin:center;
+    }
+
+    @keyframes bob{
+      0%,100%{ transform:translateY(0) }
+      50%{ transform:translateY(-5px) }
+    }
+
+    @keyframes pulse{
+      0%{ transform:scale(1); }
+      50%{ transform:scale(1.05); }
+      100%{ transform:scale(1); }
+    }
+
+    .title{
+      font-size:30px;
+      font-weight:900;
+      margin-bottom:8px;
+      color:#312e81;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      line-height:1.9;
+      font-size:16px;
+    }
+
+    .guide{
+      margin-top:14px;
+      background:#eefbf3;
+      border-right:6px solid var(--green);
+      border-radius:20px;
+      padding:14px;
+      line-height:1.9;
+      font-size:15px;
+    }
+
+    .bubble-guide{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      background:#fff7ed;
+      border-right:6px solid var(--yellow);
+      border-radius:22px;
+      padding:14px;
+      margin-top:14px;
+    }
+
+    .bubble-face{
+      font-size:34px;
+      flex-shrink:0;
+    }
+
+    .section-title{
+      font-size:24px;
+      font-weight:900;
+      color:#4338ca;
+      margin-bottom:12px;
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:20px;
+      padding:16px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.18s ease;
+      margin-top:12px;
+    }
+
+    .btn:hover{ transform:translateY(-1px) scale(1.01); }
+    .btn:active{ transform:scale(.985); }
+
+    .btn-primary{
+      color:white;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+    }
+
+    .btn-soft{
+      background:#eef2ff;
+      color:var(--primary);
+    }
+
+    .goal-grid,.choices,.result-list,.reflect-list,.timeline{ display:grid; gap:12px; }
+
+    .goal-card,.choice,.task,.priority-item,.result-card,.reflect-choice,.event-choice{
+      width:100%;
+      border:none;
+      background:#f8fafc;
+      border-radius:20px;
+      padding:14px;
+      text-align:right;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+
+    .goal-card.active,.choice.active,.event-choice.active,.reflect-choice.active,.task.selected,.priority-item.starred{
+      background:#eef2ff;
+      border:2px solid #818cf8;
+    }
+
+    .goal-card:hover,.choice:hover,.task:hover,.priority-item:hover,.reflect-choice:hover,.event-choice:hover{
+      transform:translateY(-1px);
+    }
+
+    .goal-big{
+      font-size:18px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+
+    .goal-small,.tiny{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .accordion{
+      overflow:hidden;
+      border-radius:22px;
+      border:2px solid #edf2f7;
+      background:white;
+      margin-bottom:12px;
+    }
+
+    .accordion-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:16px;
+      cursor:pointer;
+      background:#fafbff;
+      font-weight:900;
+    }
+
+    .accordion-body{ display:none; padding:12px; }
+    .accordion.open .accordion-body{ display:block; }
+
+    .task{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+      border:2px solid transparent;
+    }
+
+    .task-main{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex:1;
+      min-width:0;
+    }
+
+    .task-icon{ font-size:24px; }
+    .task-name{ font-size:15px; font-weight:900; }
+
+    .badge{
+      min-width:92px;
+      text-align:center;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .minus{ background:#fff1f2; color:#e11d48; }
+    .plus{ background:#ecfdf5; color:#16a34a; }
+
+    .notice{
+      display:none;
+      margin-top:12px;
+      border-radius:20px;
+      padding:14px;
+      line-height:1.8;
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .notice.show{ display:block; }
+    .notice.warn{ background:#fff7ed; color:#b45309; border-right:6px solid var(--yellow); }
+    .notice.good{ background:#ecfdf5; color:#166534; border-right:6px solid var(--green); }
+
+    .chip-wrap{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    .chip{
+      background:#eef2ff;
+      color:var(--primary);
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .summary-box{
+      background:#f8fafc;
+      border-radius:20px;
+      padding:14px;
+      margin-top:12px;
+    }
+
+    .priority-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      border:2px solid transparent;
+    }
+
+    .star{
+      font-size:28px;
+      user-select:none;
+    }
+
+    .timeline .step{
+      background:#f8fafc;
+      border-radius:20px;
+      padding:14px;
+      line-height:1.8;
+      font-size:15px;
+      animation:pop .25s ease;
+    }
+
+    @keyframes pop{
+      from{opacity:0;transform:scale(.98)}
+      to{opacity:1;transform:scale(1)}
+    }
+
+    .result-card{
+      line-height:1.9;
+      cursor:default;
+      background:linear-gradient(180deg,#f8fafc,#ffffff);
+      border:2px solid #edf2f7;
+    }
+
+    .score-big{
+      font-size:58px;
+      text-align:center;
+      color:#4338ca;
+      font-weight:900;
+      margin:12px 0;
+    }
+
+    .star-score{
+      text-align:center;
+      font-size:38px;
+      margin-bottom:12px;
+    }
+
+    .celebrate{
+      display:none;
+      text-align:center;
+      font-size:18px;
+      font-weight:900;
+      color:#7c3aed;
+      margin-top:8px;
+      animation:bounce .55s ease;
+    }
+
+    .celebrate.show{ display:block; }
+
+    @keyframes bounce{
+      0%{transform:translateY(12px); opacity:0}
+      50%{transform:translateY(-6px); opacity:1}
+      100%{transform:translateY(0); opacity:1}
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:20px;
+      background:rgba(49,46,129,.95);
+      color:white;
+      padding:12px 16px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition:.25s ease;
+      z-index:99;
+    }
+
+    .toast.show{
+      opacity:1;
+      bottom:28px;
+    }
+
+    .mini-row{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.7;
+    }
+
+    @media (max-width:640px){
+      .hero{ grid-template-columns:1fr; text-align:center; }
+      .stats{ grid-template-columns:1fr; }
+      .brand{ font-size:24px; }
+      .title{ font-size:25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkles" id="sparkles"></div>
+
+  <div class="app">
+    <div class="topbar">
+      <div style="text-align: center; font-size: 12px; color: #667eea; font-weight: 700; margin-bottom: 12px;">✏️ شَدا عابِد - أخصائية العلاج الوظيفي</div>
+      <div class="topline">
+        <div class="brand">🎒 مهمة الغد</div>
+        <div class="stage" id="stage">مرحلة البداية</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="label">⚡ طاقة سامي</div>
+          <div class="value" id="energyText">70</div>
+          <div class="meter"><div class="fill energy-fill" id="energyFill" style="width:70%"></div></div>
+        </div>
+
+        <div class="stat">
+          <div class="label">🙂 حالة سامي</div>
+          <div class="value" id="stateText">جاهز</div>
+          <div class="meter"><div class="fill ready-fill" id="stateFill" style="width:100%"></div></div>
+        </div>
+
+        <div class="stat">
+          <div class="label">📝 المهام المختارة</div>
+          <div class="value" id="countText">0</div>
+          <div class="mini-row">فكر بالأهم أولاً</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="screen" id="meet-sami">
+      <div class="card">
+        <div class="hero">
+          <div class="avatar-box"><div class="avatar" id="heroFace">🧒</div></div>
+          <div>
+            <div class="title">هذا سامي</div>
+            <div class="subtitle">
+              غداً عنده يوم مدرسي مهم جداً:
+              <br>🧮 اختبار رياضيات
+              <br>📖 قراءة بالعربية
+              <br>🎤 عرض شفهي بالإنجليزية
+            </div>
+          </div>
+        </div>
+
+        <div class="guide">
+          المشكلة هي أن سامي عنده <strong>70 طاقة فقط</strong> اليوم.
+          إذا حاول يعمل كل شيء، سيتعب.
+          <br><strong>هل ستساعدينه يخطط بذكاء؟</strong>
+        </div>
+
+        <button class="btn btn-primary" onclick="go('tutorial','كيف نلعب')">نعم! سأساعده ✨</button>
+      </div>
+    </section>
+
+    <section class="screen active" id="intro">
+      <div class="card">
+        <div class="section-title">🎯 أهداف اللعبة العلاجية</div>
+        <p style="text-align: center; color: #667eea; font-weight: 700; margin-bottom: 20px;">هذه اللعبة تساعدك على تطوير:</p>
+        <div class="result-list">
+          <div class="result-card">🧠 <strong>التخطيط</strong> - كيف تخطط ليومك بحكمة</div>
+          <div class="result-card">⚡ <strong>إدارة الطاقة</strong> - فهم أن الطاقة محدودة ويجب استخدامها بحكمة</div>
+          <div class="result-card">🎯 <strong>تحديد الأولويات</strong> - اختيار الأهم والأكثر فائدة أولاً</div>
+          <div class="result-card">🔮 <strong>التنبؤ بالنتائج</strong> - فهم أن كل اختيار له نتيجة</div>
+          <div class="result-card">🔄 <strong>المرونة</strong> - التكيف عند حدوث مفاجآت</div>
+          <div class="result-card">💭 <strong>ما وراء المعرفة</strong> - التفكير في طريقة تفكيرك</div>
+        </div>
+
+        <div class="bubble-guide">
+          <div class="bubble-face">✏️</div>
+          <div><strong>مع شدا عابد:</strong> هل أنت مستعد لتعلم إدارة طاقتك والتخطيط الذكي؟</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="go('tutorial','كيف نلعب؟')">نعم! ابدأ 🚀</button>
+      </div>
+    </section>
+
+    <section class="screen" id="tutorial">
+      <div class="card">
+        <div class="section-title">كيف نلعب؟</div>
+        <div class="result-list">
+          <div class="result-card">1️⃣ كل مهمة تحتاج طاقة.</div>
+          <div class="result-card">2️⃣ بعض الأشياء تعيد طاقة سامي، مثل الإفطار والراحة.</div>
+          <div class="result-card">3️⃣ لا يمكنه فعل كل شيء، لذلك اختر الأهم.</div>
+          <div class="result-card">4️⃣ إذا تعب كثيراً، سيكون أداؤه غداً أضعف.</div>
+        </div>
+
+        <div class="bubble-guide">
+          <div class="bubble-face">🧠</div>
+          <div><strong>مساعد التخطيط:</strong> لا تنظري فقط إلى ما هو ممتع. فكر: ماذا سيفيد سامي غداً فعلاً؟</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="renderGoals(); go('goals','ما الأهم غداً؟')">فهمت 👍</button>
+      </div>
+    </section>
+
+    <section class="screen" id="goals">
+      <div class="card">
+        <div class="section-title">ما الأكثر أهمية غداً؟</div>
+        <p class="subtitle">اختر الأشياء التي تحتاج تركيزاً أكبر.</p>
+        <div class="goal-grid" id="goalGrid"></div>
+
+        <div class="bubble-guide">
+          <div class="bubble-face">💡</div>
+          <div>اختيارك هنا سيساعدك لاحقاً في معرفة ما هي الأولويات الحقيقية.</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="goPlanning()">التالي: خطة اليوم 📋</button>
+      </div>
+    </section>
+
+    <section class="screen" id="planning">
+      <div class="card">
+        <div class="section-title">خططي ليوم سامي</div>
+        <p class="subtitle">اختر المهام التي سيفعلها اليوم. لا تبالغ حتى لا يتعب.</p>
+
+        <div id="taskAccordions"></div>
+
+        <div class="notice warn" id="warnBox"></div>
+        <div class="notice good" id="goodBox"></div>
+
+        <div class="summary-box">
+          <strong>المهام المختارة:</strong>
+          <div class="chip-wrap" id="chipWrap"></div>
+          <div class="tiny" id="planHint" style="margin-top:10px;">لم تختر أي مهمة بعد.</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="goPriority()">التالي: اختر الأهم ⭐</button>
+      </div>
+    </section>
+
+    <section class="screen" id="priority">
+      <div class="card">
+        <div class="section-title">أي مهمتين هما الأهم جداً؟</div>
+        <p class="subtitle">اختر من المهام التي خططت لها فقط. لديك نجمتان ⭐⭐</p>
+        <div id="priorityList" class="result-list"></div>
+
+        <div class="bubble-guide">
+          <div class="bubble-face">⭐</div>
+          <div>ليس المهم أن يفعل سامي أشياء كثيرة. المهم أن يعرف ما الأهم.</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="goPrediction()">التالي: توقعي النتيجة 🔮</button>
+      </div>
+    </section>
+
+    <section class="screen" id="prediction">
+      <div class="card">
+        <div class="section-title">هل تعتقدين أن الخطة ستنجح؟</div>
+        <div class="choices">
+          <button class="choice" onclick="pickPrediction(this,'نعم')">نعم 😄</button>
+          <button class="choice" onclick="pickPrediction(this,'ربما')">ربما 🤔</button>
+          <button class="choice" onclick="pickPrediction(this,'لا')">لا 😬</button>
+        </div>
+        <button class="btn btn-primary" onclick="go('event','حدث مفاجئ')">تابعي 🚦</button>
+      </div>
+    </section>
+
+    <section class="screen" id="event">
+      <div class="card">
+        <div class="section-title">حدث مفاجئ! 📱</div>
+        <p class="subtitle">صديق سامي اتصل وقال: تعال نلعب!</p>
+
+        <div class="choices">
+          <button class="event-choice" onclick="pickEvent(this,'full')">ألعب كثيراً (-15 طاقة)</button>
+          <button class="event-choice" onclick="pickEvent(this,'little')">ألعب قليلاً فقط (-5 طاقة)</button>
+          <button class="event-choice" onclick="pickEvent(this,'no')">أعتذر وأكمل خطتي (0)</button>
+        </div>
+
+        <div class="notice warn" id="eventHint"></div>
+
+        <button class="btn btn-primary" onclick="runDay()">ابدأ تنفيذ اليوم ▶️</button>
+      </div>
+    </section>
+
+    <section class="screen" id="execution">
+      <div class="card">
+        <div class="section-title">تنفيذ اليوم</div>
+        <p class="subtitle">لنرَ كيف مرّ يوم سامي خطوة خطوة.</p>
+        <div class="timeline" id="timeline"></div>
+        <button class="btn btn-primary" onclick="showResults()">ماذا حدث غداً؟ 🌤️</button>
+      </div>
+    </section>
+
+    <section class="screen" id="results">
+      <div class="card">
+        <div class="section-title">صباح اليوم التالي</div>
+        <p class="subtitle">دخل سامي المدرسة... وهذه النتيجة.</p>
+        <div class="result-list" id="resultList"></div>
+        <button class="btn btn-primary" onclick="showScore()">أظهر التقييم النهائي 📊</button>
+      </div>
+    </section>
+
+    <section class="screen" id="score">
+      <div class="card">
+        <div class="section-title">كيف كانت الخطة؟</div>
+        <div class="score-big" id="scoreBig">0%</div>
+        <div class="star-score" id="starScore">⭐</div>
+        <div class="celebrate" id="celebrate">🎉 أحسنت! هذه خطة ممتازة!</div>
+        <div class="result-list" id="scoreList"></div>
+        <button class="btn btn-primary" onclick="go('reflection','ماذا تعلمنا؟')">ماذا تعلمنا؟ 💭</button>
+      </div>
+    </section>
+
+    <section class="screen" id="reflection">
+      <div class="card">
+        <div class="section-title">ماذا تعلمتِ؟</div>
+        <div class="reflect-list">
+          <button class="reflect-choice" onclick="pickReflection(this)">المهم ليس أن أفعل كل شيء</button>
+          <button class="reflect-choice" onclick="pickReflection(this)">يجب أن أختار الأولويات</button>
+          <button class="reflect-choice" onclick="pickReflection(this)">الراحة تساعدني</button>
+          <button class="reflect-choice" onclick="pickReflection(this)">يجب أن أفكر في الغد أولاً</button>
+        </div>
+
+        <div class="guide" id="reflectionGuide">
+          التخطيط الذكي يعني: أفكر، أختار، أوازن، ثم أرى النتيجة.
+        </div>
+
+        <button class="btn btn-primary" onclick="resetGame()">العب من جديد 🔄</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      energy: 70,
+      goals: [],
+      selected: [],
+      priorities: [],
+      prediction: null,
+      event: null,
+      score: 0
+    };
+
+    const goals = [
+      {id:"math", icon:"🧮", title:"اختبار الرياضيات", desc:"يحتاج تدريباً وحلاً وتركيزاً."},
+      {id:"arabic", icon:"📖", title:"القراءة بالعربية", desc:"تحتاج قراءة وفهماً."},
+      {id:"english", icon:"🎤", title:"العرض بالإنجليزية", desc:"يحتاج تدريباً على التحدث."}
+    ];
+
+    const groups = [
+      { key:"math", title:"الرياضيات", icon:"🧮", tasks:[
+        {id:"math-read", icon:"📚", name:"قراءة الفصل", energy:-20, desc:"تفيد في تذكّر القاعدة."},
+        {id:"math-hw", icon:"✏️", name:"حل الواجب", energy:-30, desc:"يجهّز سامي للاختبار."},
+        {id:"math-practice", icon:"🔢", name:"تمارين التدريب", energy:-25, desc:"الأهم تقريباً للاختبار."}
+      ]},
+      { key:"arabic", title:"العربية", icon:"📖", tasks:[
+        {id:"arabic-story", icon:"📕", name:"قراءة قصة", energy:-18, desc:"تساعد في الفهم والقراءة."},
+        {id:"arabic-hw", icon:"✒️", name:"حل الواجب", energy:-25, desc:"يثبّت المعلومات."},
+        {id:"arabic-grammar", icon:"📝", name:"تعلم القواعد", energy:-20, desc:"يفيد في الدقة والفهم."}
+      ]},
+      { key:"english", title:"الإنجليزية", icon:"🎤", tasks:[
+        {id:"english-read", icon:"📗", name:"قراءة كتاب", energy:-22, desc:"يزيد التعرّض للكلمات."},
+        {id:"english-translate", icon:"🔤", name:"ترجمة كلمات", energy:-28, desc:"يفيد المفردات."},
+        {id:"english-speaking", icon:"🎤", name:"تدريب التحدث", energy:-20, desc:"الأهم للعرض الشفهي."}
+      ]},
+      { key:"recovery", title:"أشياء تساعد سامي", icon:"🍽️", tasks:[
+        {id:"breakfast", icon:"🥐", name:"إفطار صحي", energy:+20, desc:"يعيد النشاط والتركيز."},
+        {id:"break", icon:"😴", name:"استراحة قصيرة", energy:+10, desc:"تخفف التعب قليلاً."},
+        {id:"deep-rest", icon:"🛏️", name:"راحة عميقة", energy:+30, desc:"تعيد طاقة كبيرة."}
+      ]},
+      { key:"fun", title:"أشياء ممتعة", icon:"🎮", tasks:[
+        {id:"art", icon:"🎨", name:"مشروع فني", energy:-15, desc:"ممتع لكنه ليس أولوية دراسية."},
+        {id:"game", icon:"🎮", name:"لعبة تعليمية", energy:-10, desc:"مفيدة أحياناً لكنها ليست الأساس."}
+      ]}
+    ];
+
+    const strongTasks = ["math-practice","arabic-story","english-speaking"];
+    const goalMap = {
+      math:["math-read","math-hw","math-practice"],
+      arabic:["arabic-story","arabic-hw","arabic-grammar"],
+      english:["english-read","english-translate","english-speaking"]
+    };
+
+    function createSparkles(){
+      const wrap = document.getElementById("sparkles");
+      for(let i=0;i<24;i++){
+        const s = document.createElement("div");
+        s.className = "sparkle";
+        s.style.left = Math.random()*100 + "vw";
+        s.style.animationDuration = (8 + Math.random()*8) + "s";
+        s.style.animationDelay = (Math.random()*8) + "s";
+        s.style.width = s.style.height = (6 + Math.random()*10) + "px";
+        wrap.appendChild(s);
+      }
+    }
+
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(()=> t.classList.remove("show"), 1600);
+    }
+
+    function go(id, label){
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.getElementById("stage").textContent = label;
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+
+    function readinessLabel(){
+      if(state.energy >= 60) return "جاهز";
+      if(state.energy >= 40) return "جيد";
+      if(state.energy >= 25) return "متعب";
+      return "مرهق";
+    }
+
+    function readinessFill(){
+      if(state.energy >= 60) return 100;
+      if(state.energy >= 40) return 75;
+      if(state.energy >= 25) return 50;
+      return 25;
+    }
+
+    function updateTop(){
+      state.energy = clamp(state.energy, 0, 100);
+      document.getElementById("energyText").textContent = state.energy;
+      document.getElementById("energyFill").style.width = state.energy + "%";
+      document.getElementById("stateText").textContent = readinessLabel();
+      document.getElementById("stateFill").style.width = readinessFill() + "%";
+      document.getElementById("countText").textContent = state.selected.length;
+      document.getElementById("heroFace").textContent = state.energy < 25 ? "😵" : state.energy < 40 ? "😓" : "🧒";
+    }
+
+    function findTask(id){
+      for(const g of groups){
+        for(const t of g.tasks){
+          if(t.id === id) return {...t, group:g.key, groupTitle:g.title};
+        }
+      }
+      return null;
+    }
+
+    function renderGoals(){
+      const wrap = document.getElementById("goalGrid");
+      wrap.innerHTML = goals.map(g => `
+        <button class="goal-card ${state.goals.includes(g.id) ? "active" : ""}" onclick="toggleGoal('${g.id}')">
+          <div class="goal-big">${g.icon} ${g.title}</div>
+          <div class="goal-small">${g.desc}</div>
+        </button>
+      `).join("");
+    }
+
+    function toggleGoal(id){
+      if(state.goals.includes(id)){
+        state.goals = state.goals.filter(x => x !== id);
+      } else {
+        state.goals.push(id);
+      }
+      renderGoals();
+      toast("تم تحديث اختياراتك");
+    }
+
+    function goPlanning(){
+      renderPlanning();
+      refreshPlan();
+      go("planning","خطة اليوم");
+    }
+
+    function renderPlanning(){
+      const wrap = document.getElementById("taskAccordions");
+      wrap.innerHTML = groups.map((g,i)=>`
+        <div class="accordion ${i<2 ? 'open' : ''}" id="acc-${g.key}">
+          <div class="accordion-header" onclick="toggleAccordion('acc-${g.key}')">
+            <span>${g.icon} ${g.title}</span>
+            <span>▾</span>
+          </div>
+          <div class="accordion-body">
+            ${g.tasks.map(t=>{
+              const selected = state.selected.includes(t.id);
+              return `
+                <button class="task ${selected ? 'selected' : ''}" onclick="event.stopPropagation(); toggleTask('${t.id}')">
+                  <div class="task-main">
+                    <div class="task-icon">${t.icon}</div>
+                    <div>
+                      <div class="task-name">${t.name}</div>
+                      <div class="tiny">${t.desc}</div>
+                    </div>
+                  </div>
+                  <div class="badge ${t.energy > 0 ? 'plus' : 'minus'}">${t.energy > 0 ? '+' : ''}${t.energy}</div>
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function toggleAccordion(id){
+      document.getElementById(id).classList.toggle("open");
+    }
+
+    function toggleTask(id){
+      const task = findTask(id);
+      if(!task) return;
+
+      if(state.selected.includes(id)){
+        state.selected = state.selected.filter(x => x !== id);
+        state.priorities = state.priorities.filter(x => x !== id);
+        state.energy -= task.energy;
+        toast("تم حذف المهمة ❌");
+      } else {
+        state.selected.push(id);
+        state.energy += task.energy;
+        const msg = task.energy > 0 
+          ? "اختيار ممتاز! هذا سيساعد سامي 💪" 
+          : "تمت إضافة المهمة المهمة ✅";
+        toast(msg);
+      }
+
+      state.energy = clamp(state.energy,0,100);
+      renderPlanning();
+      refreshPlan();
+      updateTop();
+    }
+
+    function refreshPlan(){
+      const chipWrap = document.getElementById("chipWrap");
+      const hint = document.getElementById("planHint");
+      const warn = document.getElementById("warnBox");
+      const good = document.getElementById("goodBox");
+
+      chipWrap.innerHTML = state.selected.map(id => {
+        const t = findTask(id);
+        return `<div class="chip">${t.icon} ${t.name}</div>`;
+      }).join("");
+
+      warn.className = "notice warn";
+      good.className = "notice good";
+
+      if(state.selected.length === 0){
+        hint.textContent = "لم تختر أي مهمة بعد.";
+      } else if(state.energy < 25){
+        hint.textContent = "الخطة مرهقة جداً.";
+        warn.textContent = "⚠️ سامي أصبح مرهقاً جداً. ربما يحتاج راحة أو تقليل بعض المهام.";
+        warn.classList.add("show");
+      } else if(state.energy < 40){
+        hint.textContent = "الخطة ممكنة، لكن الطاقة منخفضة.";
+        warn.textContent = "⚠️ انتبه، طاقة سامي منخفضة. فكر بإضافة إفطار أو استراحة.";
+        warn.classList.add("show");
+      } else {
+        hint.textContent = planningAdvice();
+        good.textContent = "✅ الخطة تبدو متوازنة حتى الآن.";
+        good.classList.add("show");
+      }
+    }
+
+    function planningAdvice(){
+      const hasRecovery = state.selected.some(id => ["breakfast","break","deep-rest"].includes(id));
+      const needMath = state.goals.includes("math") && !state.selected.some(id => id.startsWith("math-"));
+      const needArabic = state.goals.includes("arabic") && !state.selected.some(id => id.startsWith("arabic-"));
+      const needEnglish = state.goals.includes("english") && !state.selected.some(id => id.startsWith("english-"));
+      const hasGoodBalance = state.selected.length >= 2 && hasRecovery;
+
+      if(hasGoodBalance) return "🎯 خطة متوازنة جداً! سامي سيكون مستعداً وسعيداً.";
+      if(needMath) return "⚠️ أنتِ قلت الرياضيات مهمة، لكنك لم تختر لها شيئاً!";
+      if(needArabic) return "⚠️ أنتِ قلت العربية مهمة، لكنك لم تختر لها شيئاً!";
+      if(needEnglish) return "⚠️ أنتِ قلت الإنجليزية مهمة، لكنك لم تختر لها شيئاً!";
+      if(!hasRecovery && state.selected.length >= 3) return "💡 إضافة إفطار أو استراحة ستجعل الخطة أفضل كثيراً.";
+      return "🤔 فكر: هل اخترتِ الأهم أم فقط الأسهل؟";
+    }
+
+    function goPriority(){
+      if(state.selected.length === 0){
+        alert("اختر بعض المهام أولاً.");
+        return;
+      }
+      renderPriority();
+      go("priority","اختيار الأهم");
+    }
+
+    function renderPriority(){
+      const wrap = document.getElementById("priorityList");
+      wrap.innerHTML = state.selected.map(id => {
+        const t = findTask(id);
+        return `
+          <button class="priority-item ${state.priorities.includes(id) ? 'starred' : ''}" onclick="togglePriority('${id}')">
+            <div>
+              <div class="task-name">${t.icon} ${t.name}</div>
+              <div class="tiny">${t.groupTitle}</div>
+            </div>
+            <div class="star">${state.priorities.includes(id) ? '⭐' : '☆'}</div>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function togglePriority(id){
+      if(state.priorities.includes(id)){
+        state.priorities = state.priorities.filter(x => x !== id);
+        toast("تمت إزالة النجمة ⭐");
+      } else {
+        if(state.priorities.length >= 2){
+          alert("يمكنك اختيار مهمتين فقط بالنجوم. فكر أي منهما أهم؟");
+          return;
+        }
+        state.priorities.push(id);
+        toast("اختيار ممتاز للأولوية! ⭐");
+      }
+      renderPriority();
+    }
+
+    function goPrediction(){
+      go("prediction","توقع النتيجة");
+    }
+
+    function pickPrediction(el,val){
+      state.prediction = val;
+      document.querySelectorAll(".choice").forEach(b => b.classList.remove("active"));
+      el.classList.add("active");
+      toast("تم حفظ توقعك");
+    }
+
+    function pickEvent(el,val){
+      state.event = val;
+      document.querySelectorAll(".event-choice").forEach(b => b.classList.remove("active"));
+      el.classList.add("active");
+      const box = document.getElementById("eventHint");
+      box.className = "notice warn show";
+
+      if(val === "full") {
+        box.textContent = "⚠️ هذا ممتع لسامي، لكنه سيخسر 15 طاقة. هل يستحق؟";
+        toast("اختيار يحتاج تفكير 🤔");
+      }
+      if(val === "little") {
+        box.textContent = "💙 اختيار متوازن جداً! سامي سيلعب قليلاً ويخسر 5 طاقة فقط.";
+        toast("اختيار ذكي! 👍");
+      }
+      if(val === "no") {
+        box.textContent = "💪 سامي قوي! قال لا بلطف وحافظ على طاقته كلها للدراسة.";
+        toast("اختيار الرياضي الحكيم! 🏆");
+      }
+    }
+
+    function runDay(){
+      const tl = document.getElementById("timeline");
+      let temp = 70;
+      let steps = [`🌅 بدأ اليوم ومعه <strong>${temp}</strong> طاقة.`];
+
+      state.selected.forEach(id=>{
+        const t = findTask(id);
+        temp = clamp(temp + t.energy, 0, 100);
+        steps.push(
+          `${t.icon} <strong>${t.name}</strong> ${t.energy > 0 ? `أعادت لسامي <strong>${t.energy}</strong> طاقة` : `استهلكت <strong>${Math.abs(t.energy)}</strong> طاقة`}
+          <br>الطاقة الآن: <strong>${temp}</strong>`
+        );
+      });
+
+      if(state.event === "full"){
+        temp = clamp(temp - 15, 0, 100);
+        steps.push(`📱 لعب سامي كثيراً مع صديقه وخسر <strong>15</strong> طاقة.<br>الطاقة الآن: <strong>${temp}</strong>`);
+      } else if(state.event === "little"){
+        temp = clamp(temp - 5, 0, 100);
+        steps.push(`📱 لعب سامي قليلاً فقط وخسر <strong>5</strong> طاقة.<br>الطاقة الآن: <strong>${temp}</strong>`);
+      } else if(state.event === "no"){
+        steps.push(`📱 سامي اعتذر بلطف وأكمل خطته دون خسارة طاقة إضافية.`);
+      }
+
+      state.energy = temp;
+      updateTop();
+      tl.innerHTML = steps.map(s => `<div class="step">${s}</div>`).join("");
+      go("execution","تنفيذ اليوم");
+    }
+
+    function countPrefix(prefix){
+      return state.selected.filter(id => id.startsWith(prefix)).length;
+    }
+
+    function hasTask(id){
+      return state.selected.includes(id);
+    }
+
+    function showResults(){
+      const wrap = document.getElementById("resultList");
+      const mathCount = countPrefix("math-");
+      const arabicCount = countPrefix("arabic-");
+      const englishCount = countPrefix("english-");
+
+      const items = [];
+
+      if(hasTask("math-practice") || mathCount >= 2){
+        items.push("🧮 سامي رأى ورقة الاختبار وقال: أنا أعرف هذا! كان مستعداً جيداً.");
+      } else if(mathCount === 1){
+        items.push("🧮 سامي عرف بعض الأسئلة فقط، وكان يحتاج تدريباً أكثر.");
+      } else {
+        items.push("🧮 شعر سامي أن اختبار الرياضيات صعب لأنه لم يتحضر كفاية.");
+      }
+
+      if(hasTask("arabic-story") || arabicCount >= 2){
+        items.push("📖 قرأ سامي النص بثقة وفهم الفكرة بشكل أفضل.");
+      } else if(arabicCount === 1){
+        items.push("📖 فهم سامي جزءاً من القراءة، لكنه توقف في بعض المواضع.");
+      } else {
+        items.push("📖 واجه سامي صعوبة في القراءة لأنه لم يتحضر لها.");
+      }
+
+      if(hasTask("english-speaking") || englishCount >= 2){
+        items.push("🎤 قدّم سامي العرض بصوت أوضح وشعر بثقة أكثر.");
+      } else if(englishCount === 1){
+        items.push("🎤 حاول سامي، لكنه بقي متوتراً قليلاً أثناء العرض.");
+      } else {
+        items.push("🎤 شعر سامي بالتوتر ونسي بعض الكلمات لأنه لم يتدرب.");
+      }
+
+      if(state.energy >= 60){
+        items.push("🙂 بقي سامي نشيطاً طوال اليوم المدرسي تقريباً.");
+      } else if(state.energy >= 40){
+        items.push("😌 كان وضع سامي جيداً، لكن التعب ظهر قليلاً.");
+      } else if(state.energy >= 25){
+        items.push("😓 بدأ التعب يظهر على سامي في المدرسة.");
+      } else {
+        items.push("😵 كان سامي مرهقاً جداً، وهذا أثّر على أدائه.");
+      }
+
+      wrap.innerHTML = items.map(x => `<div class="result-card">${x}</div>`).join("");
+      go("results","نتائج الغد");
+    }
+
+    function showScore(){
+      calculateScore();
+      const big = document.getElementById("scoreBig");
+      const star = document.getElementById("starScore");
+      const list = document.getElementById("scoreList");
+      const cel = document.getElementById("celebrate");
+
+      big.textContent = state.score + "%";
+
+      if(state.score >= 90) star.textContent = "⭐⭐⭐⭐";
+      else if(state.score >= 80) star.textContent = "⭐⭐⭐";
+      else if(state.score >= 65) star.textContent = "⭐⭐";
+      else star.textContent = "⭐";
+
+      cel.classList.toggle("show", state.score >= 80);
+
+      list.innerHTML = `
+        <div class="result-card">⚡ حالة سامي النهائية: <strong>${readinessLabel()}</strong></div>
+        <div class="result-card">⭐ الأولويات الصحيحة: <strong>${state.priorities.length}</strong> / 2</div>
+        <div class="result-card">🔮 توقعك قبل النتيجة: <strong>${state.prediction || "لم يتم الاختيار"}</strong></div>
+        <div class="result-card">🎯 التقييم: <strong>${scoreComment(state.score)}</strong></div>
+      `;
+
+      go("score","التقييم النهائي");
+    }
+
+    function calculateScore(){
+      let academic = ((countPrefix("math-")/3)*100 + (countPrefix("arabic-")/3)*100 + (countPrefix("english-")/3)*100) / 3;
+
+      let energyFactor = 1;
+      if(state.energy >= 60) energyFactor = 1;
+      else if(state.energy >= 40) energyFactor = 0.9;
+      else if(state.energy >= 25) energyFactor = 0.75;
+      else energyFactor = 0.6;
+
+      let priorityBonus = 0;
+      state.priorities.forEach(id=>{
+        if(strongTasks.includes(id)) priorityBonus += 8;
+        else priorityBonus += 5;
+      });
+
+      let goalBonus = 0;
+      state.goals.forEach(g=>{
+        if(goalMap[g].some(id => state.selected.includes(id))) goalBonus += 5;
+      });
+
+      let funPenalty = 0;
+      const funCount = state.selected.filter(id => id === "art" || id === "game").length;
+      const coreCount = state.selected.filter(id => id.startsWith("math-") || id.startsWith("arabic-") || id.startsWith("english-")).length;
+      if(funCount >= 2 && coreCount <= 1) funPenalty = 12;
+
+      state.score = clamp(Math.round((academic * energyFactor) + priorityBonus + goalBonus - funPenalty), 0, 100);
+    }
+
+    function scoreComment(score){
+      if(score >= 90) return "ممتازة جداً. فكرتِ في الغد وحددتِ الأهم بذكاء.";
+      if(score >= 75) return "جيدة جداً. يوجد تخطيط واضح واختيارات مفيدة.";
+      if(score >= 55) return "متوسطة. بعض الاختيارات جيدة، لكن كان يمكن ترتيبها أفضل.";
+      return "ضعيفة. سامي احتاج خطة أوضح وراحة أو تحديد أولويات أفضل.";
+    }
+
+    function pickReflection(el){
+      document.querySelectorAll(".reflect-choice").forEach(b => b.classList.remove("active"));
+      el.classList.add("active");
+      const reflectionText = el.textContent.trim();
+      let message = "";
+      
+      if(reflectionText.includes("الأولويات")) message = "👏 نعم! تحديد الأولويات بذكاء يجعل يومك أفضل كثيراً.";
+      else if(reflectionText.includes("الطاقة")) message = "💪 صحيح تماماً! الراحة جزء مهم من التخطيط الذكي.";
+      else if(reflectionText.includes("الدراسة")) message = "🎯 فكرة عظيمة! التركيز على الأهم أولاً يوفر وقتاً وطاقة.";
+      
+      document.getElementById("reflectionGuide").innerHTML = `أحسنت 👏<br>الفكرة المهمة هنا هي: <strong>${reflectionText}</strong><br><br>${message}`;
+    }
+
+    function resetGame(){
+      state.energy = 70;
+      state.goals = [];
+      state.selected = [];
+      state.priorities = [];
+      state.prediction = null;
+      state.event = null;
+      state.score = 0;
+
+      document.querySelectorAll(".choice,.event-choice,.reflect-choice").forEach(b => b.classList.remove("active"));
+      document.getElementById("eventHint").className = "notice warn";
+      document.getElementById("celebrate").classList.remove("show");
+
+      updateTop();
+      renderGoals();
+      go("intro","مرحلة البداية");
+      toast("بدأت لعبة جديدة");
+    }
+
+    createSparkles();
+    updateTop();
+    renderGoals();
+  </script>
+</body>
+</html>

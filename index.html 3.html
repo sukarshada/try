@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>لعبة الأنماط الذكية</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; width: 100%; }
+        .app { width: 100%; min-height: 100vh; display: flex; flex-direction: column; background: white; }
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px; text-align: center; }
+        .header h1 { font-size: 22px; font-weight: bold; margin-bottom: 8px; }
+        .header-info { font-size: 12px; margin-top: 8px; display: flex; justify-content: space-around; }
+        .main { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .screen { display: none; width: 100%; max-width: 500px; }
+        .screen.active { display: block; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; }
+        .card-title { font-size: 20px; font-weight: bold; color: #333; text-align: center; margin-bottom: 16px; }
+        .intro-text { font-size: 14px; color: #666; line-height: 1.6; text-align: right; margin-bottom: 20px; }
+        .grid-display { background: #f0f0f0; padding: 16px; border-radius: 10px; margin-bottom: 16px; display: grid; gap: 6px; transition: opacity 0.3s; }
+        .block { width: 50px; height: 50px; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+        .block:active { transform: scale(0.95); }
+        .block.selected { border: 3px solid #333; }
+        .block.correct { opacity: 0.5; }
+        .workspace { display: grid; gap: 6px; margin-bottom: 16px; }
+        .workspace-slot { width: 50px; height: 50px; background: #ddd; border-radius: 6px; border: 2px dashed #999; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .workspace-slot:active { background: #ccc; }
+        .workspace-slot.filled { background: white; border: 2px solid #667eea; }
+        .button { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .button:active { transform: scale(0.98); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-secondary { background: #ddd; color: #333; }
+        .level-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .level-btn { padding: 16px; background: white; border: 2px solid #667eea; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .level-btn:active { transform: scale(0.95); }
+        .level-btn.locked { opacity: 0.5; pointer-events: none; background: #f5f5f5; }
+        .level-number { font-size: 24px; margin-bottom: 4px; }
+        .level-name { font-size: 12px; color: #667eea; }
+        .level-stars { font-size: 10px; margin-top: 4px; }
+        .timer { font-size: 18px; font-weight: bold; color: #f44336; text-align: center; margin: 16px 0; }
+        .feedback { padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 16px; display: none; }
+        .feedback.show { display: block; }
+        .feedback.correct { background: #e8f5e9; color: #2e7d32; }
+        .feedback.wrong { background: #ffebee; color: #c62828; }
+        .stars { text-align: center; font-size: 28px; margin: 16px 0; }
+        .footer { background: white; padding: 12px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #ddd; }
+        .badges { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .badge { padding: 12px; background: #fff9c4; border-radius: 8px; text-align: center; font-size: 12px; color: #856404; }
+        .badge.locked { opacity: 0.4; }
+        @media (min-width: 600px) {
+            .grid-display { grid-template-columns: repeat(4, 1fr); }
+            .workspace { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <h1>🎨 لعبة الأنماط الذكية</h1>
+        <div class="header-info">
+            <div>⭐ النقاط: <span id="points">0</span></div>
+            <div>🏆 الشارات: <span id="badges">0</span></div>
+            <div>📊 المستوى: <span id="level">1</span></div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- START SCREEN -->
+        <div class="screen active" id="startScreen">
+            <div class="card">
+                <div class="card-title">🎨 لعبة الأنماط الذكية</div>
+                <div class="intro-text">
+                    <p>مرحباً! 👋</p>
+                    <p style="margin-top: 10px;"><strong>كيف تلعب؟</strong></p>
+                    
+                    <p style="margin-top: 12px;">1️⃣ <strong>ستظهر صورة ملونة</strong></p>
+                    <p>سترى نمط من الألوان الملون في مربعات.</p>
+                    
+                    <p style="margin-top: 10px;">2️⃣ <strong>لديك 7 ثواني فقط</strong></p>
+                    <p>حفظ الصورة في رأسك جيداً.</p>
+                    
+                    <p style="margin-top: 10px;">3️⃣ <strong>الصورة ستختفي!</strong></p>
+                    <p>بعد 7 ثواني، الصورة تختفي تماماً.</p>
+                    
+                    <p style="margin-top: 10px;">4️⃣ <strong>أعد بناء النمط</strong></p>
+                    <p>اختر لوناً من الأسفل، ثم اضغط على مربع لتلوينه.</p>
+                    
+                    <p style="margin-top: 10px;">5️⃣ <strong>تحقق من إجابتك</strong></p>
+                    <p>اضغط "تحقق" لترى إذا كنت صحيح!</p>
+                    
+                    <p style="margin-top: 15px; font-weight: bold; color: #667eea;">⚠️ كلما تقدمت، الأنماط أصبحت أصعب وأعقد!</p>
+                </div>
+                <button class="button btn-primary" onclick="goToScreen('levelScreen')">ابدأ 🎮</button>
+            </div>
+        </div>
+
+        <!-- LEVEL SELECT SCREEN -->
+        <div class="screen" id="levelScreen">
+            <div class="card">
+                <div class="card-title">اختر المستوى</div>
+                <div class="level-grid" id="levelGrid"></div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div class="screen" id="gameScreen">
+            <div class="card">
+                <div class="card-title" id="gameTitle">المستوى 1</div>
+                <div class="timer" id="timer"></div>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #667eea; margin-bottom: 8px; text-align: right;">📋 الصورة الأصلية:</div>
+                    <div class="grid-display" id="modelGrid"></div>
+                </div>
+
+                <div id="instructionText" style="background: #f0f0f0; padding: 10px; border-radius: 8px; font-size: 12px; text-align: right; margin-bottom: 16px; color: #666;"></div>
+
+                <div style="font-size: 12px; font-weight: bold; color: #667eea; margin-bottom: 8px; text-align: right;">🎨 اعيد بناء النمط:</div>
+                <div class="workspace" id="workspace"></div>
+
+                <div style="font-size: 12px; font-weight: bold; color: #667eea; margin: 16px 0 8px 0; text-align: right;">🎨 اختر اللون:</div>
+                <div id="colorPalette" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 16px;"></div>
+
+                <div class="feedback" id="feedback"></div>
+
+                <button class="button btn-primary" onclick="checkAnswer()" id="checkBtn">تحقق ✓</button>
+                <button class="button btn-secondary" onclick="goToScreen('levelScreen')">العودة</button>
+            </div>
+        </div>
+
+        <!-- RESULT SCREEN -->
+        <div class="screen" id="resultScreen">
+            <div class="card">
+                <div class="card-title" id="resultTitle">ممتاز!</div>
+                <div class="stars" id="resultStars">⭐⭐⭐</div>
+                <div id="resultMsg" style="text-align: right; font-size: 14px; color: #666; margin-bottom: 20px;"></div>
+                <div class="badges" id="resultBadges"></div>
+                <button class="button btn-primary" onclick="nextLevel()">المستوى التالي ➡️</button>
+                <button class="button btn-secondary" onclick="goToScreen('levelScreen')">العودة للقائمة</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        ✏️ إعداد: شدا عابد – علاج وظيفي
+    </div>
+</div>
+
+<script>
+const COLORS = {
+    red: '#f44336',
+    blue: '#2196F3',
+    green: '#4CAF50',
+    yellow: '#FFD700',
+    purple: '#9C27B0',
+    orange: '#FF9800'
+};
+
+const LEVELS = {
+    1: { name: 'البداية', type: 'copy', grid: 3, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 4 }], time: 7, instruction: 'حفظ النمط!' },
+    2: { name: 'ألوان اثنين', type: 'copy', grid: 3, pattern: [{ color: 'red', pos: 0 }, { color: 'red', pos: 1 }, { color: 'blue', pos: 4 }], time: 7, instruction: 'ثواني قليلة فقط!' },
+    3: { name: 'صف كامل', type: 'copy', grid: 3, pattern: [{ color: 'red', pos: 0 }, { color: 'red', pos: 1 }, { color: 'red', pos: 2 }, { color: 'blue', pos: 4 }], time: 7, instruction: 'ركز على النمط!' },
+    4: { name: 'نمط متوازن', type: 'copy', grid: 3, pattern: [{ color: 'red', pos: 0 }, { color: 'red', pos: 2 }, { color: 'blue', pos: 3 }, { color: 'blue', pos: 5 }, { color: 'green', pos: 7 }], time: 7, instruction: 'نمط معقد قليلاً' },
+    5: { name: 'أربع ألوان', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 1 }, { color: 'green', pos: 4 }, { color: 'yellow', pos: 5 }], time: 7, instruction: 'أربع ألوان مختلفة' },
+    6: { name: 'نمط معقد', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'red', pos: 1 }, { color: 'blue', pos: 2 }, { color: 'blue', pos: 3 }, { color: 'green', pos: 5 }, { color: 'yellow', pos: 6 }], time: 7, instruction: 'حفظ 6 مربعات' },
+    7: { name: 'شطرنج الألوان', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 1 }, { color: 'red', pos: 4 }, { color: 'blue', pos: 5 }, { color: 'red', pos: 8 }, { color: 'blue', pos: 9 }], time: 7, instruction: 'نمط متبادل' },
+    8: { name: 'ستة ألوان', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 1 }, { color: 'green', pos: 2 }, { color: 'yellow', pos: 5 }, { color: 'purple', pos: 9 }, { color: 'orange', pos: 13 }], time: 7, instruction: 'ستة ألوان!' },
+    9: { name: 'نمط الحدود', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'red', pos: 1 }, { color: 'red', pos: 2 }, { color: 'red', pos: 3 }, { color: 'red', pos: 12 }, { color: 'red', pos: 13 }, { color: 'red', pos: 14 }, { color: 'red', pos: 15 }], time: 7, instruction: 'ملء الحدود' },
+    10: { name: 'نمط بالقطر', type: 'copy', grid: 4, pattern: [{ color: 'blue', pos: 0 }, { color: 'blue', pos: 5 }, { color: 'blue', pos: 10 }, { color: 'blue', pos: 15 }], time: 7, instruction: 'قطري من الزاوية' },
+    11: { name: 'صليب الألوان', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 1 }, { color: 'red', pos: 5 }, { color: 'red', pos: 6 }, { color: 'red', pos: 7 }, { color: 'red', pos: 9 }, { color: 'red', pos: 13 }], time: 7, instruction: 'صليب ملون' },
+    12: { name: 'نمط صعب جداً', type: 'copy', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 2 }, { color: 'green', pos: 5 }, { color: 'yellow', pos: 7 }, { color: 'purple', pos: 10 }, { color: 'orange', pos: 12 }, { color: 'red', pos: 14 }, { color: 'blue', pos: 15 }], time: 7, instruction: 'صعب جداً!' },
+    13: { name: 'تحدي الذاكرة 1', type: 'memory', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 3 }, { color: 'green', pos: 6 }, { color: 'yellow', pos: 9 }], time: 7, instruction: '3 ثواني فقط!' },
+    14: { name: 'تحدي الذاكرة 2', type: 'memory', grid: 4, pattern: [{ color: 'red', pos: 1 }, { color: 'blue', pos: 4 }, { color: 'green', pos: 7 }, { color: 'yellow', pos: 10 }, { color: 'purple', pos: 13 }, { color: 'orange', pos: 14 }], time: 7, instruction: '2 ثانية فقط!' },
+    15: { name: '👑 التحدي النهائي', type: 'memory', grid: 4, pattern: [{ color: 'red', pos: 0 }, { color: 'blue', pos: 2 }, { color: 'green', pos: 5 }, { color: 'yellow', pos: 7 }, { color: 'purple', pos: 10 }, { color: 'orange', pos: 12 }, { color: 'red', pos: 14 }, { color: 'blue', pos: 15 }], time: 7, instruction: 'ثانية واحدة للتركيز!' }
+};
+
+let state = {
+    currentLevel: 1,
+    points: 0,
+    badges: 0,
+    unlockedLevels: [1, 2, 3, 4, 5],
+    workspace: [],
+    modelHidden: false,
+    selected: null,
+    timerInterval: null
+};
+
+function goToScreen(id) {
+    clearInterval(state.timerInterval);
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'levelScreen') renderLevelSelect();
+}
+
+function renderLevelSelect() {
+    const grid = document.getElementById('levelGrid');
+    grid.innerHTML = '';
+    for (let i = 1; i <= 15; i++) {
+        const level = LEVELS[i];
+        const unlocked = state.unlockedLevels.includes(i);
+        const btn = document.createElement('div');
+        btn.className = 'level-btn' + (unlocked ? '' : ' locked');
+        btn.innerHTML = `
+            <div class="level-number">${i}</div>
+            <div class="level-name">${level.name}</div>
+        `;
+        if (unlocked) {
+            btn.onclick = () => startLevel(i);
+        }
+        grid.appendChild(btn);
+    }
+}
+
+function startLevel(levelNum) {
+    state.currentLevel = levelNum;
+    state.workspace = Array(LEVELS[levelNum].grid * LEVELS[levelNum].grid).fill(null);
+    state.selected = null;
+    state.modelHidden = false;
+    
+    const level = LEVELS[levelNum];
+    document.getElementById('gameTitle').textContent = `المستوى ${levelNum}: ${level.name}`;
+    document.getElementById('instructionText').textContent = `${level.instruction}\n\n📍 اختر لوناً من الأسفل، ثم اضغط على مربع لتلوينه.`;
+    document.getElementById('level').textContent = levelNum;
+    document.getElementById('timer').style.display = 'block';
+    document.getElementById('timer').textContent = `⏱️ ${level.time}`;
+    
+    const grid = document.getElementById('modelGrid');
+    grid.style.opacity = '1';
+    
+    renderModel();
+    renderColorPalette();
+    renderWorkspace();
+    goToScreen('gameScreen');
+    
+    startTimer();
+}
+
+function renderModel() {
+    const level = LEVELS[state.currentLevel];
+    const grid = document.getElementById('modelGrid');
+    const size = level.grid;
+    grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    grid.innerHTML = '';
+    
+    for (let i = 0; i < size * size; i++) {
+        const block = document.createElement('div');
+        block.className = 'block';
+        const item = level.pattern.find(p => p.pos === i);
+        if (item) {
+            block.style.background = COLORS[item.color];
+        } else {
+            block.style.background = '#e0e0e0';
+        }
+        grid.appendChild(block);
+    }
+    
+    if (level.type === 'memory') {
+        setTimeout(() => {
+            grid.style.opacity = '0.2';
+            state.modelHidden = true;
+        }, level.time * 1000);
+    }
+}
+
+function renderColorPalette() {
+    const palette = document.getElementById('colorPalette');
+    palette.innerHTML = '';
+    
+    const colorList = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+    
+    for (let colorName of colorList) {
+        const btn = document.createElement('div');
+        btn.style.width = '100%';
+        btn.style.height = '50px';
+        btn.style.background = COLORS[colorName];
+        btn.style.borderRadius = '8px';
+        btn.style.cursor = 'pointer';
+        btn.style.border = state.selected === colorName ? '4px solid black' : '2px solid #ddd';
+        btn.style.transition = 'all 0.2s';
+        btn.onclick = () => selectColor(colorName);
+        palette.appendChild(btn);
+    }
+    
+    // Add eraser button
+    const eraserBtn = document.createElement('div');
+    eraserBtn.style.width = '100%';
+    eraserBtn.style.height = '50px';
+    eraserBtn.style.background = '#ccc';
+    eraserBtn.style.borderRadius = '8px';
+    eraserBtn.style.cursor = 'pointer';
+    eraserBtn.style.border = state.selected === null ? '4px solid black' : '2px solid #ddd';
+    eraserBtn.style.transition = 'all 0.2s';
+    eraserBtn.style.fontSize = '20px';
+    eraserBtn.style.display = 'flex';
+    eraserBtn.style.alignItems = 'center';
+    eraserBtn.style.justifyContent = 'center';
+    eraserBtn.textContent = '🗑️';
+    eraserBtn.onclick = () => selectColor(null);
+    palette.appendChild(eraserBtn);
+}
+
+function selectColor(color) {
+    state.selected = color;
+    renderColorPalette();
+    if (color === null) {
+        document.getElementById('instructionText').textContent = `🗑️ أنت في وضع المسح. اضغط على مربع لحذف اللون.`;
+    } else {
+        document.getElementById('instructionText').textContent = `✅ اخترت اللون! اضغط على مربع لتلوينه.`;
+    }
+}
+
+function renderWorkspace() {
+    const level = LEVELS[state.currentLevel];
+    const size = level.grid;
+    const ws = document.getElementById('workspace');
+    ws.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    ws.innerHTML = '';
+    
+    for (let i = 0; i < size * size; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'workspace-slot' + (state.workspace[i] ? ' filled' : '');
+        slot.style.cursor = 'pointer';
+        slot.onclick = () => placeColor(i);
+        
+        if (state.workspace[i]) {
+            slot.style.background = COLORS[state.workspace[i]];
+            slot.style.border = '2px solid #667eea';
+        } else {
+            slot.style.background = '#ddd';
+            slot.style.border = '2px dashed #999';
+        }
+        ws.appendChild(slot);
+    }
+}
+
+function placeColor(pos) {
+    if (state.selected === null) {
+        state.workspace[pos] = null;
+    } else {
+        state.workspace[pos] = state.selected;
+    }
+    renderWorkspace();
+}
+
+function startTimer() {
+    const level = LEVELS[state.currentLevel];
+    let time = level.time;
+    document.getElementById('timer').textContent = `⏱️ ${time}`;
+    
+    state.timerInterval = setInterval(() => {
+        time--;
+        document.getElementById('timer').textContent = `⏱️ ${time}`;
+        
+        if (time === 0) {
+            clearInterval(state.timerInterval);
+            document.getElementById('timer').textContent = '❌ اختفت الصورة!';
+            document.getElementById('modelGrid').style.opacity = '0';
+            state.modelHidden = true;
+            document.getElementById('instructionText').textContent = '👁️ الآن اعتمد على الذاكرة! أعد بناء النمط من ما تتذكره.';
+        }
+    }, 1000);
+}
+
+function checkAnswer() {
+    clearInterval(state.timerInterval);
+    const level = LEVELS[state.currentLevel];
+    
+    let correct = 0;
+    let total = level.pattern.length;
+    
+    for (let item of level.pattern) {
+        if (state.workspace[item.pos] === item.color) {
+            correct++;
+        }
+    }
+    
+    const score = Math.round((correct / total) * 100);
+    const stars = score >= 100 ? 3 : score >= 80 ? 2 : 1;
+    
+    state.points += stars * 10;
+    document.getElementById('points').textContent = state.points;
+    
+    showResult(score, stars);
+}
+
+function showResult(score, stars) {
+    let title = '';
+    let msg = '';
+    
+    if (stars === 3) {
+        title = '🏆 عبقري!';
+        msg = 'أنت لاحظت كل شيء بدقة!';
+    } else if (stars === 2) {
+        title = '👍 جيد!';
+        msg = 'أداء ممتاز! استمر هكذا!';
+    } else {
+        title = '💪 قريب!';
+        msg = 'حاول مرة أخرى! ستصبح أفضل!';
+    }
+    
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultStars').textContent = '⭐'.repeat(stars);
+    document.getElementById('resultMsg').textContent = msg;
+    
+    if (!state.unlockedLevels.includes(state.currentLevel + 1) && stars >= 2) {
+        state.unlockedLevels.push(state.currentLevel + 1);
+        state.badges++;
+        document.getElementById('badges').textContent = state.badges;
+        
+        document.getElementById('resultBadges').innerHTML = '<div class="badge">🎉 فتحت مستوى جديد!</div>';
+    } else {
+        document.getElementById('resultBadges').innerHTML = '';
+    }
+    
+    goToScreen('resultScreen');
+}
+
+function nextLevel() {
+    if (state.currentLevel < 15) {
+        startLevel(state.currentLevel + 1);
+    } else {
+        alert('🏆 أحسنت! أكملت جميع المستويات!');
+        goToScreen('levelScreen');
+    }
+}
+
+renderLevelSelect();
+</script>
+</body>
+</html>
